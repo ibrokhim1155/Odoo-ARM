@@ -1,0 +1,42 @@
+<odoo noupdate="1">
+
+    <record id="ws_cutting" model="arm.workstation">
+        <field name="name">Цех раскроя</field>
+        <field name="code">CUT</field>
+    </record>
+
+    <record id="ws_edgebanding" model="arm.workstation">
+        <field name="name">Цех кромки</field>
+        <field name="code">EDGE</field>
+    </record>
+
+    <record id="ws_drilling" model="arm.workstation">
+        <field name="name">Цех присадки</field>
+        <field name="code">DRILL</field>
+    </record>
+
+    <record id="task_wardrobe_edge" model="arm.production.task">
+        <field name="order_number">ORD-1001</field>
+        <field name="name">Кромка — Шкаф-купе</field>
+        <field name="workstation_id" ref="ws_edgebanding"/>
+        <field name="priority">2</field>
+        <field name="state">ready</field>
+    </record>
+
+    <record id="task_table_cut" model="arm.production.task">
+        <field name="order_number">ORD-1002</field>
+        <field name="name">Раскрой — Стол письменный</field>
+        <field name="workstation_id" ref="ws_cutting"/>
+        <field name="priority">1</field>
+        <field name="state">ready</field>
+    </record>
+
+    <record id="task_bed_drill" model="arm.production.task">
+        <field name="order_number">ORD-1003</field>
+        <field name="name">Присадка — Кровать</field>
+        <field name="workstation_id" ref="ws_drilling"/>
+        <field name="priority">0</field>
+        <field name="state">ready</field>
+    </record>
+
+</odoo>

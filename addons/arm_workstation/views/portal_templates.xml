@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="arm_operator_page_main" name="ARM Operator Page (Main)">
+    <t t-call="website.layout">
+      <div id="wrap" class="oe_structure">
+        <section class="container mt-4">
+          <h2>АРМ: Задания</h2>
+
+          <t t-foreach="tasks" t-as="task">
+            <div class="card mb-3" t-attf-class="card mb-3 border-#{task.state}">
+              <div class="card-body">
+                <strong>
+                  <t t-esc="task.order_number"/> — <t t-esc="task.name"/>
+                </strong>
+                <div>Статус: <t t-esc="task.state"/></div>
+
+                <div class="mt-2">
+                  <t t-if="task.state == 'ready'">
+                    <form action="/arm/action" method="post">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="hidden" name="task_id" t-att-value="task.id"/>
+                      <input type="hidden" name="action" value="take"/>
+                      <button class="btn btn-primary">ВЗЯТЬ В РАБОТУ</button>
+                    </form>
+                  </t>
+
+                  <t t-if="task.state == 'in_progress'">
+                    <form action="/arm/action" method="post" class="d-inline">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="hidden" name="task_id" t-att-value="task.id"/>
+                      <input type="hidden" name="action" value="done"/>
+                      <button class="btn btn-success">ГОТОВО</button>
+                    </form>
+
+                    <form action="/arm/action" method="post" class="d-inline">
+                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                      <input type="hidden" name="task_id" t-att-value="task.id"/>
+                      <input type="hidden" name="action" value="defect"/>
+                      <input type="text" name="reason" placeholder="Причина брака" class="form-control d-inline w-auto mx-2"/>
+                      <button class="btn btn-danger">БРАК</button>
+                    </form>
+                  </t>
+                </div>
+              </div>
+            </div>
+          </t>
+        </section>
+      </div>
+    </t>
+  </template>
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_arm_production_task_list" model="ir.ui.view">
+        <field name="name">arm.production.task.list</field>
+        <field name="model">arm.production.task</field>
+        <field name="type">list</field>
+        <field name="arch" type="xml">
+            <list string="Tasks"
+                  decoration-danger="state == 'defect'"
+                  decoration-warning="state == 'in_progress'">
+                <field name="order_number"/>
+                <field name="name"/>
+                <field name="state"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_arm_production_task_form" model="ir.ui.view">
+        <field name="name">arm.production.task.form</field>
+        <field name="model">arm.production.task</field>
+        <field name="arch" type="xml">
+            <form string="Task">
+                <group>
+                    <field name="order_number"/>
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="start_time"/>
+                    <field name="end_time"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_arm_production_task" model="ir.actions.act_window">
+        <field name="name">Tasks</field>
+        <field name="res_model">arm.production.task</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
