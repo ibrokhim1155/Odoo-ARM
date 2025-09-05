@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="group_arm_user" model="res.groups">
-        <field name="name">ARM User</field>
-        <field name="category_id" ref="base.module_category_manufacturing"/>
-    </record>
+  <record id="group_arm_user" model="res.groups">
+    <field name="name">ARM User</field>
+    <field name="category_id" ref="base.module_category_manufacturing"/>
+  </record>
 </odoo>

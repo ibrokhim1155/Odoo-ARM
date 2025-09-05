@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_arm_task_user,access_arm_task_user,model_arm_production_task,arm_workstation.group_arm_user,1,1,1,0
+access_arm_task_user,access_arm_task_user,model_arm_production_task,arm_workstation.group_arm_user,1,1,1,1
+access_arm_workstation_user,access_arm_workstation_user,model_arm_workstation,arm_workstation.group_arm_user,1,0,0,0
+access_arm_workstation_employee,access_arm_workstation_employee,model_arm_workstation,base.group_user,1,0,0,0
