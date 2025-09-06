@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <menuitem id="menu_arm_root" name="ARM" sequence="10"/>
+  <menuitem id="menu_arm_root" name="ARM" sequence="10"/>
 
-    <menuitem id="menu_arm_tasks"
-              name="Tasks"
-              parent="menu_arm_root"
-              action="action_arm_production_task"
-              sequence="10"/>
+  <menuitem id="menu_arm_tasks"
+            name="Tasks"
+            parent="menu_arm_root"
+            action="action_arm_production_task"
+            sequence="10"/>
+
+  <menuitem id="menu_arm_workstations"
+            name="Workstations"
+            parent="menu_arm_root"
+            action="action_arm_workstation"
+            sequence="20"/>
+
+  <menuitem id="menu_arm_maintenance"
+            name="Maintenance"
+            parent="menu_arm_root"
+            action="action_arm_maintenance"
+            sequence="30"/>
 </odoo>

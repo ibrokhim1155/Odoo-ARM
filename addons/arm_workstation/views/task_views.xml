@@ -6,7 +6,7 @@
     <field name="model">arm.production.task</field>
     <field name="arch" type="xml">
       <list string="Tasks"
-            decoration-danger="state == 'defect' or state == 'blocked'"
+            decoration-danger="state in ('defect','blocked')"
             decoration-warning="state == 'in_progress'"
             decoration-success="state == 'done'">
         <field name="order_number"/>
@@ -18,6 +18,8 @@
         <field name="price"/>
         <field name="amount"/>
         <field name="assigned_user_id"/>
+        <field name="worker_ids" widget="many2many_tags"/>
+        <field name="workers_count"/>
         <field name="start_time"/>
         <field name="end_time"/>
         <field name="duration_minutes"/>
@@ -31,26 +33,40 @@
     <field name="arch" type="xml">
       <form string="Task">
         <header>
-          <button name="action_take_into_work" type="object"
-                  string="Взять в работу"
-                  class="btn-primary"
-                  invisible="state not in ['ready','blocked']"/>
-          <button name="action_mark_done" type="object"
-                  string="Готово"
-                  class="btn-success"
-                  invisible="state != 'in_progress'"/>
-          <button name="action_mark_defect" type="object"
-                  string="Брак"
-                  class="btn-danger"
-                  invisible="state != 'in_progress'"/>
-          <button name="action_mark_blocked" type="object"
-                  string="Нет возможности"
-                  class="btn-secondary"
-                  invisible="state != 'in_progress'"/>
+  <button name="action_join_current" type="object"
+          string="Join"
+          class="btn-secondary"
+          invisible="['in', state, ['done','defect']]"/>
 
-          <field name="state" widget="statusbar"
-                 statusbar_visible="ready,in_progress,blocked,defect,done"/>
-        </header>
+  <button name="action_leave_current" type="object"
+          string="Leave"
+          class="btn-secondary"
+          invisible="['in', state, ['done','defect']]"/>
+
+  <button name="action_take_into_work" type="object"
+          string="Взять в работу"
+          class="btn-primary"
+          invisible="['not in', state, ['ready','blocked']]"/>
+
+  <button name="action_mark_done" type="object"
+          string="Готово"
+          class="btn-success"
+          invisible="['!=', state, 'in_progress']"/>
+
+  <button name="action_mark_defect" type="object"
+          string="Брак"
+          class="btn-danger"
+          invisible="['!=', state, 'in_progress']"/>
+
+  <button name="action_mark_blocked" type="object"
+          string="Нет возможности"
+          class="btn-secondary"
+          invisible="['not in', state, ['in_progress','ready']]"/>
+
+  <field name="state" widget="statusbar"
+         statusbar_visible="ready,in_progress,blocked,defect,done"/>
+</header>
+
 
         <sheet>
           <group>
@@ -59,7 +75,8 @@
               <field name="name"/>
               <field name="workstation_id"/>
               <field name="assigned_user_id"/>
-              <field name="operators" widget="many2many_tags" readonly="1"/>
+              <field name="worker_ids" widget="many2many_tags"/>
+              <field name="workers_count" readonly="1"/>
               <field name="priority"/>
             </group>
             <group>
@@ -88,21 +105,13 @@
             <page string="Files">
               <field name="attachment_ids" widget="many2many_binary"/>
             </page>
+            <page string="Chatter">
+              <chatter/>
+            </page>
           </notebook>
-
-          <div class="oe_chatter">
-            <field name="message_follower_ids"/>
-            <field name="message_ids"/>
-          </div>
         </sheet>
       </form>
     </field>
-  </record>
-
-  <record id="action_arm_production_task" model="ir.actions.act_window">
-    <field name="name">Tasks</field>
-    <field name="res_model">arm.production.task</field>
-    <field name="view_mode">list,form</field>
   </record>
 
   <record id="view_arm_production_task_search" model="ir.ui.view">
@@ -113,6 +122,7 @@
         <field name="order_number"/>
         <field name="name"/>
         <field name="workstation_id"/>
+        <field name="assigned_user_id"/>
         <filter name="ready" string="Ready" domain="[('state','=','ready')]"/>
         <filter name="in_progress" string="In Progress" domain="[('state','=','in_progress')]"/>
         <filter name="blocked" string="Blocked" domain="[('state','=','blocked')]"/>
@@ -121,6 +131,41 @@
         <separator/>
         <filter name="high" string="High Priority" domain="[('priority','=','2')]"/>
       </search>
+    </field>
+  </record>
+
+  <record id="action_arm_production_task" model="ir.actions.act_window">
+    <field name="name">Tasks</field>
+    <field name="res_model">arm.production.task</field>
+    <field name="view_mode">list,form,graph,pivot</field>
+  </record>
+
+  <record id="view_arm_production_task_graph" model="ir.ui.view">
+    <field name="name">arm.production.task.graph</field>
+    <field name="model">arm.production.task</field>
+    <field name="arch" type="xml">
+      <graph string="Performance" type="bar">
+        <field name="qty" type="measure"/>
+        <field name="amount" type="measure"/>
+        <field name="duration_minutes" type="measure"/>
+        <field name="assigned_user_id" type="row"/>
+        <field name="state" type="col"/>
+      </graph>
+    </field>
+  </record>
+
+  <record id="view_arm_production_task_pivot" model="ir.ui.view">
+    <field name="name">arm.production.task.pivot</field>
+    <field name="model">arm.production.task</field>
+    <field name="arch" type="xml">
+      <pivot string="Task Pivot">
+        <field name="assigned_user_id" type="row"/>
+        <field name="workstation_id" type="row"/>
+        <field name="state" type="col"/>
+        <field name="qty" type="measure"/>
+        <field name="amount" type="measure"/>
+        <field name="duration_minutes" type="measure"/>
+      </pivot>
     </field>
   </record>
 

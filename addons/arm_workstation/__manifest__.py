@@ -7,9 +7,13 @@
     "data": [
         "security/arm_security.xml",
         "security/ir.model.access.csv",
+
         "views/task_views.xml",
+        "views/workstation_views.xml",
+        "views/maintenance_views.xml",
         "views/menu.xml",
         "views/portal_templates.xml",
+
         "data/demo.xml",
     ],
     "application": True,

@@ -1,115 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo noupdate="1">
 
-    <record id="ws_cutting" model="arm.workstation">
-        <field name="name">Цех раскроя</field>
-        <field name="code">CUT</field>
-        <field name="operator_ids" eval="[(4, ref('base.user_admin'))]"/>
-    </record>
+  <record id="ws_cutting" model="arm.workstation">
+    <field name="name">Цех раскроя</field>
+    <field name="code">CUT</field>
+    <field name="operator_ids" eval="[(4, ref('base.user_admin')), (4, ref('base.user_demo'))]"/>
+  </record>
 
-    <record id="ws_edgebanding" model="arm.workstation">
-        <field name="name">Цех кромки</field>
-        <field name="code">EDGE</field>
-        <field name="operator_ids" eval="[(4, ref('base.user_admin'))]"/>
-    </record>
+  <record id="ws_edgebanding" model="arm.workstation">
+    <field name="name">Цех кромки</field>
+    <field name="code">EDGE</field>
+    <field name="operator_ids" eval="[(4, ref('base.user_admin')), (4, ref('base.user_demo'))]"/>
+  </record>
 
-    <record id="ws_drilling" model="arm.workstation">
-        <field name="name">Цех присадки</field>
-        <field name="code">DRILL</field>
-        <field name="operator_ids" eval="[(4, ref('base.user_admin'))]"/>
-    </record>
+  <record id="ws_drilling" model="arm.workstation">
+    <field name="name">Цех присадки</field>
+    <field name="code">DRILL</field>
+    <field name="operator_ids" eval="[(4, ref('base.user_admin'))]"/>
+  </record>
 
+  <record id="att_edge_drawing" model="ir.attachment">
+    <field name="name">Шкаф-купе - эскиз.pdf</field>
+    <field name="type">url</field>
+    <field name="url">https://example.com/drawings/wardrobe.pdf</field>
+  </record>
 
-    <record id="att_edge_drawing" model="ir.attachment">
-        <field name="name">Шкаф-купе - эскиз.pdf</field>
-        <field name="type">url</field>
-        <field name="url">https://example.com/drawings/wardrobe.pdf</field>
-    </record>
-    <record id="att_table_drawing" model="ir.attachment">
-        <field name="name">Стол письменный - чертёж.dxf</field>
-        <field name="type">url</field>
-        <field name="url">https://example.com/drawings/desk.dxf</field>
-    </record>
-    <record id="att_bed_drawing" model="ir.attachment">
-        <field name="name">Кровать - присадка.xlsx</field>
-        <field name="type">url</field>
-        <field name="url">https://example.com/drawings/bed.xlsx</field>
-    </record>
-    <record id="att_full_proj_sheet" model="ir.attachment">
-        <field name="name">Полный проект - спецификация.xlsx</field>
-        <field name="type">url</field>
-        <field name="url">https://example.com/specs/full_project.xlsx</field>
-    </record>
+  <record id="att_table_drawing" model="ir.attachment">
+    <field name="name">Стол письменный - чертёж.dxf</field>
+    <field name="type">url</field>
+    <field name="url">https://example.com/drawings/desk.dxf</field>
+  </record>
 
-    <record id="task_wardrobe_edge" model="arm.production.task">
-        <field name="order_number">ORD-1001</field>
-        <field name="name">Кромка — Шкаф-купе</field>
-        <field name="workstation_id" ref="ws_edgebanding"/>
-        <field name="priority">2</field>
-        <field name="qty">1.0</field>
-        <field name="price">16.50</field>
-        <field name="planned_start">2025-09-03 08:30:00</field>
-        <field name="deadline">2025-09-03 18:00:00</field>
-        <field name="state">ready</field>
-        <field name="attachment_ids" eval="[(4, ref('att_edge_drawing'))]"/>
-    </record>
+  <record id="att_bed_drawing" model="ir.attachment">
+    <field name="name">Кровать - присадка.xlsx</field>
+    <field name="type">url</field>
+    <field name="url">https://example.com/drawings/bed.xlsx</field>
+  </record>
 
-    <record id="task_table_cut" model="arm.production.task">
-        <field name="order_number">ORD-1002</field>
-        <field name="name">Раскрой — Стол письменный</field>
-        <field name="workstation_id" ref="ws_cutting"/>
-        <field name="priority">1</field>
-        <field name="qty">1.0</field>
-        <field name="price">20.00</field>
-        <field name="planned_start">2025-09-03 09:00:00</field>
-        <field name="deadline">2025-09-03 19:00:00</field>
-        <field name="state">in_progress</field>
-        <field name="assigned_user_id" ref="base.user_admin"/>
-        <field name="start_time">2025-09-03 09:20:00</field>
-        <field name="attachment_ids" eval="[(4, ref('att_table_drawing'))]"/>
-    </record>
+  <record id="att_full_proj_sheet" model="ir.attachment">
+    <field name="name">Полный проект - спецификация.xlsx</field>
+    <field name="type">url</field>
+    <field name="url">https://example.com/specs/full_project.xlsx</field>
+  </record>
 
-    <record id="task_bed_drill" model="arm.production.task">
-        <field name="order_number">ORD-1003</field>
-        <field name="name">Присадка — Кровать</field>
-        <field name="workstation_id" ref="ws_drilling"/>
-        <field name="priority">0</field>
-        <field name="qty">2.0</field>
-        <field name="price">12.00</field>
-        <field name="planned_start">2025-09-03 09:15:00</field>
-        <field name="deadline">2025-09-03 20:00:00</field>
-        <field name="state">done</field>
-        <field name="assigned_user_id" ref="base.user_admin"/>
-        <field name="start_time">2025-09-03 09:22:11</field>
-        <field name="end_time">2025-09-03 09:38:14</field>
-        <field name="attachment_ids" eval="[(4, ref('att_bed_drawing'))]"/>
-    </record>
+  <record id="task_wardrobe_edge" model="arm.production.task">
+    <field name="order_number">ORD-1001</field>
+    <field name="name">Кромка — Шкаф-купе</field>
+    <field name="workstation_id" ref="ws_edgebanding"/>
+    <field name="priority">2</field>
+    <field name="qty">1.0</field>
+    <field name="price">16.50</field>
+    <field name="planned_start">2025-09-03 08:30:00</field>
+    <field name="deadline">2025-09-03 18:00:00</field>
+    <field name="state">ready</field>
+    <field name="worker_ids" eval="[(4, ref('base.user_admin'))]"/>
+    <field name="attachment_ids" eval="[(4, ref('att_edge_drawing'))]"/>
+  </record>
 
-    <record id="task_full_project_edge" model="arm.production.task">
-        <field name="order_number">ORD-1010</field>
-        <field name="name">full project</field>
-        <field name="workstation_id" ref="ws_edgebanding"/>
-        <field name="priority">2</field>
-        <field name="qty">3.0</field>
-        <field name="price">154.00</field>
-        <field name="planned_start">2025-09-04 07:30:00</field>
-        <field name="deadline">2025-09-25 07:00:00</field>
-        <field name="state">blocked</field>
-        <field name="blocked_reason">not enough resource</field>
-        <field name="attachment_ids" eval="[(4, ref('att_full_proj_sheet'))]"/>
-    </record>
+  <record id="task_table_cut" model="arm.production.task">
+    <field name="order_number">ORD-1002</field>
+    <field name="name">Раскрой — Стол письменный</field>
+    <field name="workstation_id" ref="ws_cutting"/>
+    <field name="priority">1</field>
+    <field name="qty">1.0</field>
+    <field name="price">20.00</field>
+    <field name="planned_start">2025-09-03 09:00:00</field>
+    <field name="deadline">2025-09-03 19:00:00</field>
+    <field name="state">in_progress</field>
+    <field name="assigned_user_id" ref="base.user_admin"/>
+    <field name="worker_ids" eval="[(4, ref('base.user_admin')), (4, ref('base.user_demo'))]"/>
+    <field name="start_time">2025-09-03 09:20:00</field>
+    <field name="attachment_ids" eval="[(4, ref('att_table_drawing'))]"/>
+  </record>
 
-    <record id="task_small_part_defect" model="arm.production.task">
-        <field name="order_number">ORD-1011</field>
-        <field name="name">Мелкая деталь — контроль</field>
-        <field name="workstation_id" ref="ws_cutting"/>
-        <field name="priority">1</field>
-        <field name="qty">5.0</field>
-        <field name="price">8.00</field>
-        <field name="planned_start">2025-09-04 10:00:00</field>
-        <field name="deadline">2025-09-04 18:00:00</field>
-        <field name="state">defect</field>
-        <field name="defect_reason">Скол кромки на 2-х деталях</field>
-    </record>
+  <record id="task_bed_drill" model="arm.production.task">
+    <field name="order_number">ORD-1003</field>
+    <field name="name">Присадка — Кровать</field>
+    <field name="workstation_id" ref="ws_drilling"/>
+    <field name="priority">0</field>
+    <field name="qty">2.0</field>
+    <field name="price">12.00</field>
+    <field name="planned_start">2025-09-03 09:15:00</field>
+    <field name="deadline">2025-09-03 20:00:00</field>
+    <field name="state">done</field>
+    <field name="assigned_user_id" ref="base.user_admin"/>
+    <field name="worker_ids" eval="[(4, ref('base.user_admin'))]"/>
+    <field name="start_time">2025-09-03 09:22:11</field>
+    <field name="end_time">2025-09-03 09:38:14</field>
+    <field name="attachment_ids" eval="[(4, ref('att_bed_drawing'))]"/>
+  </record>
+
+  <record id="task_full_project_edge" model="arm.production.task">
+    <field name="order_number">ORD-1010</field>
+    <field name="name">full project</field>
+    <field name="workstation_id" ref="ws_edgebanding"/>
+    <field name="priority">2</field>
+    <field name="qty">3.0</field>
+    <field name="price">154.00</field>
+    <field name="planned_start">2025-09-04 07:30:00</field>
+    <field name="deadline">2025-09-25 07:00:00</field>
+    <field name="state">blocked</field>
+    <field name="blocked_reason">not enough resource</field>
+    <field name="worker_ids" eval="[(4, ref('base.user_demo'))]"/>
+    <field name="attachment_ids" eval="[(4, ref('att_full_proj_sheet'))]"/>
+  </record>
+
+  <record id="task_small_part_defect" model="arm.production.task">
+    <field name="order_number">ORD-1011</field>
+    <field name="name">Мелкая деталь — контроль</field>
+    <field name="workstation_id" ref="ws_cutting"/>
+    <field name="priority">1</field>
+    <field name="qty">5.0</field>
+    <field name="price">8.00</field>
+    <field name="planned_start">2025-09-04 10:00:00</field>
+    <field name="deadline">2025-09-04 18:00:00</field>
+    <field name="state">defect</field>
+    <field name="defect_reason">Скол кромки на 2-х деталях</field>
+    <field name="worker_ids" eval="[(4, ref('base.user_admin'))]"/>
+  </record>
+
+  <record id="ev_1002_take" model="arm.task.event">
+    <field name="task_id" ref="task_table_cut"/>
+    <field name="user_id" ref="base.user_admin"/>
+    <field name="action">take</field>
+    <field name="reason"/>
+    <field name="create_date">2025-09-03 09:20:10</field>
+  </record>
+
+  <record id="ev_1003_done" model="arm.task.event">
+    <field name="task_id" ref="task_bed_drill"/>
+    <field name="user_id" ref="base.user_admin"/>
+    <field name="action">done</field>
+    <field name="reason"/>
+    <field name="create_date">2025-09-03 09:38:20</field>
+  </record>
+
+  <record id="ev_1010_block" model="arm.task.event">
+    <field name="task_id" ref="task_full_project_edge"/>
+    <field name="user_id" ref="base.user_demo"/>
+    <field name="action">blocked</field>
+    <field name="reason">not enough resource</field>
+    <field name="create_date">2025-09-04 07:35:00</field>
+  </record>
+
+  <record id="ev_1011_defect" model="arm.task.event">
+    <field name="task_id" ref="task_small_part_defect"/>
+    <field name="user_id" ref="base.user_admin"/>
+    <field name="action">defect</field>
+    <field name="reason">Скол кромки</field>
+    <field name="create_date">2025-09-04 11:05:00</field>
+  </record>
+
+<record id="mnt_edge_planned" model="arm.workstation.maintenance">
+  <field name="name">Плановое ТО кромочного</field>
+  <field name="workstation_id" ref="ws_edgebanding"/>
+  <field name="type">planned</field>
+  <field name="date_start">2025-09-05 08:00:00</field>
+  <field name="duration_minutes">90</field>
+  <field name="notes">Замена прижимных роликов</field>
+  <field name="state">done</field>
+  <field name="attachment_ids" eval="[(4, ref('att_full_proj_sheet'))]"/>
+</record>
+
+<record id="mnt_drill_breakdown" model="arm.workstation.maintenance">
+  <field name="name">Авария сверлильного узла</field>
+  <field name="workstation_id" ref="ws_drilling"/>
+  <field name="type">breakdown</field>
+  <field name="date_start">2025-09-06 10:15:00</field>
+  <field name="duration_minutes">45</field>
+  <field name="notes">Замена ремня, калибровка</field>
+  <field name="state">open</field>
+</record>
+
+<record id="mnt_cutting_planned" model="arm.workstation.maintenance">
+  <field name="name">Плановое ТО раскроя</field>
+  <field name="workstation_id" ref="ws_cutting"/>
+  <field name="type">planned</field>
+  <field name="date_start">2025-09-07 07:30:00</field>
+  <field name="duration_minutes">60</field>
+  <field name="notes">Проверка пневмосистемы, чистка</field>
+  <field name="state">open</field>
+</record>
 
 </odoo>

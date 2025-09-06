@@ -1,140 +1,194 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <template id="arm_operator_page_main" name="ARM Operator Page (Main)">
-    <t t-call="website.layout">
-      <div id="wrap" class="oe_structure">
-        <section class="container mt-4">
-          <div class="d-flex align-items-center mb-3 gap-3">
-            <h2 class="m-0">АРМ: Задания</h2>
-            <form method="get" action="/arm" class="d-flex align-items-center gap-2 ms-auto">
-              <label class="form-label m-0 small">Рабочая зона</label>
-              <select name="ws" class="form-select form-select-sm" style="width: 260px"
-                      t-att-value="current_ws or ''" onchange="this.form.submit()">
-                <option t-att-selected="not current_ws" value="">Все зоны</option>
-                <t t-foreach="workstations" t-as="ws">
-                  <option t-att-value="ws.id"
-                          t-att-selected="(current_ws and int(current_ws)==ws.id) or None">
-                    <t t-esc="ws.display_name"/>
-                  </option>
-                </t>
-              </select>
-              <noscript><button class="btn btn-sm btn-secondary">Применить</button></noscript>
-            </form>
-          </div>
 
-          <t t-if="not tasks">
-            <div class="alert alert-info">Нет доступных заданий по выбранной зоне.</div>
-          </t>
+    <template id="arm_operator_page_main" name="ARM Operator Page (Main)">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container mt-4">
+                    <div class="d-flex align-items-center mb-3 gap-3">
+                        <h2 class="m-0">АРМ: Задания</h2>
 
-          <t t-foreach="tasks" t-as="task">
-            <t t-set="state" t-value="task.state"/>
-            <t t-set="ribbon_class">
-              <t t-if="state == 'ready'">border-success</t>
-              <t t-elif="state == 'in_progress'">border-warning</t>
-              <t t-elif="state == 'blocked'">border-danger</t>
-              <t t-elif="state == 'defect'">border-danger</t>
-              <t t-else="">border-secondary</t>
-            </t>
+                        <form method="get" action="/arm" class="d-flex align-items-center gap-2 ms-auto">
+                            <label class="form-label m-0 small">Рабочая зона</label>
+                            <select name="ws" class="form-select form-select-sm" style="width: 260px"
+                                    t-att-value="current_ws or ''" onchange="this.form.submit()">
+                                <option t-att-selected="not current_ws" value="">Все зоны</option>
+                                <t t-foreach="workstations" t-as="ws">
+                                    <option t-att-value="ws.id"
+                                            t-att-selected="(current_ws and int(current_ws)==ws.id) or None">
+                                        <t t-esc="ws.display_name"/>
+                                    </option>
+                                </t>
+                            </select>
+                            <a href="/arm/scan" class="btn btn-sm btn-outline-secondary">Сканировать</a>
+                            <noscript>
+                                <button class="btn btn-sm btn-secondary">Применить</button>
+                            </noscript>
+                        </form>
+                    </div>
 
-            <div class="card mb-3" t-attf-class="card mb-3 #{ribbon_class}">
-              <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                  <div class="fw-bold">
-                    <t t-esc="task.order_number"/> — <t t-esc="task.name"/>
-                    <span class="ms-2 text-muted small">(Зона: <t t-esc="task.workstation_id.display_name"/>)</span>
-                  </div>
-                  <div>
-                    <span t-if="state=='ready'" class="badge bg-success">Готово к работе</span>
-                    <span t-elif="state=='in_progress'" class="badge bg-warning text-dark">В работе</span>
-                    <span t-elif="state=='blocked'" class="badge bg-danger">Невозможно выполнить</span>
-                    <span t-elif="state=='defect'" class="badge bg-danger">Брак</span>
-                    <span t-elif="state=='done'" class="badge bg-secondary">Готово</span>
-                  </div>
-                </div>
-                <div class="row mt-2 small text-muted">
-                  <div class="col-auto">Приоритет: <t t-esc="task.priority"/></div>
-                  <div class="col-auto">Кол-во: <t t-esc="task.qty or 1.0"/></div>
-                  <div class="col-auto" t-if="task.price">Цена: <t t-esc="task.price"/></div>
-                  <div class="col-auto" t-if="task.amount">Сумма: <t t-esc="task.amount"/></div>
-                  <div class="col-auto" t-if="task.assigned_user_id">Оператор: <t t-esc="task.assigned_user_id.display_name"/></div>
-                  <div class="col-auto" t-if="task.start_time">Старт: <t t-esc="task.start_time"/></div>
-                  <div class="col-auto" t-if="task.end_time">Конец: <t t-esc="task.end_time"/></div>
-                  <div class="col-auto" t-if="task.duration_minutes">Длит.: <t t-esc="task.duration_minutes"/> мин</div>
-                </div>
-
-                <hr class="my-2"/>
-
-                <div class="d-flex align-items-center flex-wrap gap-2">
-                  <t t-if="state in ['ready', 'blocked']">
-                    <form action="/arm/action" method="post" class="d-inline">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <input type="hidden" name="task_id" t-att-value="task.id"/>
-                      <input type="hidden" name="action" value="take"/>
-                      <button class="btn btn-primary btn-sm">ВЗЯТЬ В РАБОТУ</button>
-                    </form>
-                  </t>
-
-                  <t t-if="state == 'in_progress'">
-                    <form action="/arm/action" method="post" class="d-inline">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <input type="hidden" name="task_id" t-att-value="task.id"/>
-                      <input type="hidden" name="action" value="done"/>
-                      <button class="btn btn-success btn-sm">ГОТОВО</button>
-                    </form>
-
-                    <form action="/arm/action" method="post" class="d-inline d-flex align-items-center gap-2">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <input type="hidden" name="task_id" t-att-value="task.id"/>
-                      <input type="hidden" name="action" value="defect"/>
-                      <input type="text" name="reason" placeholder="Причина брака"
-                             class="form-control form-control-sm w-auto"/>
-                      <button class="btn btn-danger btn-sm">БРАК</button>
-                    </form>
-
-                    <form action="/arm/action" method="post" class="d-inline d-flex align-items-center gap-2">
-                      <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                      <input type="hidden" name="task_id" t-att-value="task.id"/>
-                      <input type="hidden" name="action" value="blocked"/>
-                      <input type="text" name="reason" placeholder="Почему невозможно выполнить"
-                             class="form-control form-control-sm w-auto"/>
-                      <button class="btn btn-outline-danger btn-sm">НЕТ ВОЗМОЖНОСТИ</button>
-                    </form>
-                  </t>
-
-                  <div class="ms-auto">
-                    <t t-if="task.attachment_ids">
-                      <div class="dropdown d-inline">
-                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                          Файлы (<t t-esc="len(task.attachment_ids)"/>)
-                        </button>
-                        <ul class="dropdown-menu">
-                          <t t-foreach="task.attachment_ids" t-as="att">
-                            <li>
-                              <a class="dropdown-item"
-                                 t-att-href="'/web/content/%s?download=1' % att.id">
-                                <t t-esc="att.display_name"/>
-                              </a>
-                            </li>
-                          </t>
-                        </ul>
-                      </div>
+                    <t t-if="not tasks">
+                        <div class="alert alert-info">Нет доступных заданий по выбранной зоне.</div>
                     </t>
-                    <a t-att-href="'/web#id=%s&amp;model=arm.production.task&amp;view_type=form' % task.id"
-                       class="btn btn-light btn-sm">Подробнее</a>
-                  </div>
-                </div>
-                <div class="mt-2 small text-danger" t-if="state=='defect' and task.defect_reason">
-                  Причина брака: <t t-esc="task.defect_reason"/>
-                </div>
-                <div class="mt-2 small text-danger" t-if="state=='blocked' and task.blocked_reason">
-                  Причина невозможности: <t t-esc="task.blocked_reason"/>
-                </div>
-              </div>
+
+                    <t t-foreach="tasks" t-as="task">
+                        <t t-set="state" t-value="task.state"/>
+                        <t t-set="border_class">
+                            <t t-if="state == 'ready'">border-success</t>
+                            <t t-elif="state == 'in_progress'">border-warning</t>
+                            <t t-elif="state in ('blocked','defect')">border-danger</t>
+                            <t t-else="">border-secondary</t>
+                        </t>
+
+                        <div class="card mb-3" t-attf-class="card mb-3 #{border_class}">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="fw-bold">
+                                        <t t-esc="task.order_number"/>
+                                        —
+                                        <t t-esc="task.name"/>
+                                        <span class="ms-2 text-muted small">(Зона:<t
+                                                t-esc="task.workstation_id.display_name"/>)
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span t-if="state=='ready'" class="badge bg-success">Готово к работе</span>
+                                        <span t-elif="state=='in_progress'" class="badge bg-warning text-dark">В
+                                            работе
+                                        </span>
+                                        <span t-elif="state=='blocked'" class="badge bg-danger">Невозможно выполнить
+                                        </span>
+                                        <span t-elif="state=='defect'" class="badge bg-danger">Брак</span>
+                                        <span t-elif="state=='done'" class="badge bg-secondary">Готово</span>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-2 small text-muted">
+                                    <div class="col-auto">Приоритет:
+                                        <t t-esc="task.priority"/>
+                                    </div>
+                                    <div class="col-auto">Кол-во:
+                                        <t t-esc="task.qty or 1.0"/>
+                                    </div>
+                                    <div class="col-auto" t-if="task.price">Цена:
+                                        <t t-esc="task.price"/>
+                                    </div>
+                                    <div class="col-auto" t-if="task.amount">Сумма:
+                                        <t t-esc="task.amount"/>
+                                    </div>
+                                    <div class="col-auto" t-if="task.assigned_user_id">Оператор:
+                                        <t t-esc="task.assigned_user_id.display_name"/>
+                                    </div>
+                                    <div class="col-auto" t-if="task.start_time">Старт:
+                                        <t t-esc="task.start_time"/>
+                                    </div>
+                                    <div class="col-auto" t-if="task.end_time">Конец:
+                                        <t t-esc="task.end_time"/>
+                                    </div>
+                                    <div class="col-auto" t-if="task.duration_minutes">Длит.:
+                                        <t t-esc="task.duration_minutes"/>
+                                        мин
+                                    </div>
+                                </div>
+
+                                <hr class="my-2"/>
+
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    <t t-if="state in ['ready','blocked']">
+                                        <form action="/arm/action" method="post" class="d-inline">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                            <input type="hidden" name="action" value="take"/>
+                                            <input type="hidden" name="ws" t-att-value="current_ws or ''"/>
+                                            <button class="btn btn-primary btn-sm">ВЗЯТЬ В РАБОТУ</button>
+                                        </form>
+                                    </t>
+
+                                    <t t-if="state == 'in_progress'">
+                                        <form action="/arm/action" method="post" class="d-inline">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                            <input type="hidden" name="action" value="done"/>
+                                            <button class="btn btn-success btn-sm">ГОТОВО</button>
+                                        </form>
+
+                                        <form action="/arm/action" method="post"
+                                              class="d-inline d-flex align-items-center gap-2">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                            <input type="hidden" name="action" value="defect"/>
+                                            <input type="text" name="reason" placeholder="Причина брака"
+                                                   class="form-control form-control-sm w-auto"/>
+                                            <button class="btn btn-danger btn-sm">БРАК</button>
+                                        </form>
+
+                                        <form action="/arm/action" method="post"
+                                              class="d-inline d-flex align-items-center gap-2">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="task_id" t-att-value="task.id"/>
+                                            <input type="hidden" name="action" value="blocked"/>
+                                            <input type="text" name="reason" placeholder="Почему невозможно выполнить"
+                                                   class="form-control form-control-sm w-auto"/>
+                                            <button class="btn btn-outline-danger btn-sm">НЕТ ВОЗМОЖНОСТИ</button>
+                                        </form>
+                                    </t>
+
+                                    <div class="ms-auto">
+                                        <t t-if="task.attachment_ids">
+                                            <div class="dropdown d-inline">
+                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Файлы (<t t-esc="len(task.attachment_ids)"/>)
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <t t-foreach="task.attachment_ids" t-as="att">
+                                                        <li>
+                                                            <a class="dropdown-item"
+                                                               t-att-href="'/web/content/%s?download=1' % att.id">
+                                                                <t t-esc="att.display_name"/>
+                                                            </a>
+                                                        </li>
+                                                    </t>
+                                                </ul>
+                                            </div>
+                                        </t>
+                                        <a t-att-href="'/web#id=%s&amp;model=arm.production.task&amp;view_type=form' % task.id"
+                                           class="btn btn-light btn-sm">Подробнее
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="mt-2 small text-danger" t-if="state=='defect' and task.defect_reason">
+                                    Причина брака:
+                                    <t t-esc="task.defect_reason"/>
+                                </div>
+                                <div class="mt-2 small text-danger" t-if="state=='blocked' and task.blocked_reason">
+                                    Причина невозможности:
+                                    <t t-esc="task.blocked_reason"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </section>
             </div>
-          </t>
-        </section>
-      </div>
-    </t>
-  </template>
+        </t>
+    </template>
+
+    <template id="arm_scan_page" name="ARM Scan Page">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="container mt-4">
+                    <h2>Сканирование задания</h2>
+                    <form action="/arm/scan" method="post" class="mt-3">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="text" name="code" autofocus="autofocus" class="form-control"
+                               placeholder="Отсканируйте QR/введите номер или ID"/>
+                        <button class="btn btn-primary mt-2">Взять в работу</button>
+                        <a href="/arm" class="btn btn-link mt-2">Назад к списку</a>
+                    </form>
+                </section>
+            </div>
+        </t>
+    </template>
+
 </odoo>

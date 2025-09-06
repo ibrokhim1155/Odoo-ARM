@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <record id="view_arm_workstation_list" model="ir.ui.view">
+    <field name="name">arm.workstation.list</field>
+    <field name="model">arm.workstation</field>
+    <field name="arch" type="xml">
+      <list string="Workstations">
+        <field name="name"/>
+        <field name="code"/>
+        <field name="active"/>
+        <field name="last_service_date"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_arm_workstation_form" model="ir.ui.view">
+    <field name="name">arm.workstation.form</field>
+    <field name="model">arm.workstation</field>
+    <field name="arch" type="xml">
+      <form string="Workstation">
+        <header>
+          <button name="action_open_maintenance"
+                  type="object"
+                  class="oe_stat_button"
+                  icon="fa-wrench"
+                  string="Maintenance"/>
+        </header>
+        <sheet>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="code"/>
+              <field name="active"/>
+            </group>
+            <group>
+              <field name="last_service_date"/>
+            </group>
+          </group>
+          <group>
+            <field name="operator_ids" widget="many2many_tags"/>
+          </group>
+            <group>
+              <field name="maintenance_note"/>
+            </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_arm_workstation" model="ir.actions.act_window">
+    <field name="name">Workstations</field>
+    <field name="res_model">arm.workstation</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+</odoo>

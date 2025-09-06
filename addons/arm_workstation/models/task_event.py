@@ -7,6 +7,16 @@ class ArmTaskEvent(models.Model):
 
     task_id = fields.Many2one("arm.production.task", required=True, ondelete="cascade")
     user_id = fields.Many2one("res.users", required=True)
-    action = fields.Selection([("take","TAKE"),("done","DONE"),("defect","DEFECT"),("blocked","BLOCKED")], required=True)
+    action = fields.Selection(
+        [
+            ("take", "TAKE"),
+            ("join", "JOIN"),
+            ("leave", "LEAVE"),
+            ("done", "DONE"),
+            ("defect", "DEFECT"),
+            ("blocked", "BLOCKED"),
+        ],
+        required=True,
+    )
     reason = fields.Char()
     create_date = fields.Datetime(readonly=True)
